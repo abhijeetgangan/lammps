@@ -1,0 +1,27 @@
+units           metal
+atom_style      atomic
+atom_modify     map array
+boundary        p p p
+
+read_data       data.argon
+
+pair_style      mliap unified argon_lj.pkl 0
+pair_coeff      * * Ar
+
+neighbor        0.2 bin
+neigh_modify    every 1 delay 0 check yes
+
+timestep        0.001
+
+thermo          5
+thermo_style    custom step temp pe etotal press vol
+
+# Relax structure
+# min_style       cg
+# minimize        1.0e-10 1.0e-10 400 400
+
+dump            1 all custom 10 argon.xyz id type x y z fx fy fz
+
+velocity        all create 80 42
+fix             1 all nvt temp 80.0 80.0 $(100.0*dt)
+run             40
